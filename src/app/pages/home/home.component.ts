@@ -1,5 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { UserService } from '../../_services/user.service';
+import { UserGit } from '../../_models/userGit';
+import { ToastrService } from 'ngx-toastr';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 
 @Component({
@@ -7,20 +10,37 @@ import { UserService } from '../../_services/user.service';
   templateUrl: './home.component.html',
   styleUrl: './home.component.css'
 })
-export class HomeComponent implements OnInit{
+export class HomeComponent {
+    user: UserGit | undefined;
+    username: string = '';
+    constructor(
+        private userService: UserService,
+        private toastr: ToastrService,
+        private spinner: NgxSpinnerService,
+    )   {}
 
-    constructor(private userService: UserService){
 
-    }
+        getGitUser() {
+            if (this.username.length == 0) {
+                this.toastr.error('O campo username é obrigatório');
+                return;
+            }
 
-    ngOnInit(): void {
-        this.getGitUser();
-    }
+            this.spinner.show();
 
-    getGitUser(){
-        this.userService.getGitUser('facebook').subscribe((response:any) => {
-            console.log(response);
-        });
+            this.userService.getGitUser(this.username).subscribe(
+                (response: UserGit) => {
+                this.user = response;
+                this.spinner.hide();
+            },
+            (error) => {
+                if (error.error.message == 'Not Found') {
+                   this.toastr.error('Usuário não encontrado.');
+                }
+                // this.toastr.error(error.error.message);
+                this.spinner.hide();
+            }
+        );
     }
 
 
