@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { UserService } from '../../_services/user.service';
 import { UserGit } from '../../_models/userGit';
 import { ToastrService } from 'ngx-toastr';
-import { NgxSpinnerService } from 'ngx-spinner';
+
 
 
 @Component({
@@ -16,7 +16,7 @@ export class HomeComponent {
     constructor(
         private userService: UserService,
         private toastr: ToastrService,
-        private spinner: NgxSpinnerService,
+
     )   {}
 
 
@@ -26,19 +26,15 @@ export class HomeComponent {
                 return;
             }
 
-            this.spinner.show();
-
             this.userService.getGitUser(this.username).subscribe(
                 (response: UserGit) => {
                 this.user = response;
-                this.spinner.hide();
             },
             (error) => {
                 if (error.error.message == 'Not Found') {
                    this.toastr.error('Usuário não encontrado.');
                 }
                 // this.toastr.error(error.error.message);
-                this.spinner.hide();
             }
         );
     }
